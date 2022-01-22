@@ -1,20 +1,39 @@
-use clap::{Parser, Args, Subcommand, ArgEnum};
+use clap::{Parser, Args, AppSettings, Subcommand, ArgEnum};
 
 
-#[derive(Parser, Debug)]
+#[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 struct Cli {
-    /// Name or number of the route to query
-    #[clap(short, long)]
-    route: Option<String>,
+    #[clap(subcommand)]
+    command: Commands,
+}
 
-    /// Stop ID to query
-    #[clap(short, long)]
-    stop_id: Option<u64>,
+#[derive(Subcommand)]
+enum Commands {
+    #[clap(setting(AppSettings::ArgRequiredElseHelp))]
+    /// Provides info about a specified route.
+    Route {
+        /// Name or number of the route to query
+        route: Option<String>,
+    },
 
-    // One of either of the two directions that are valid for a given route. Either North/South or East/West. Used to filter output from other flags.
-    #[clap(short, long)]
-    direction: Option<String>,
+    #[clap(setting(AppSettings::ArgRequiredElseHelp))]
+    /// Provides info about a specified stop
+    Stop {
+       /// 5 digit Stop ID to query
+       stop_id: Option<u64>,
+    },
+
+    #[clap(setting(AppSettings::ArgRequiredElseHelp))]
+    /// Provides info regarding your next specified trip
+    Next {
+        /// Name or number of the route to query
+        route: Option<String>,
+        /// Direction of route to query for
+        direction: Option<String>,
+        /// 5 digit Stop ID to query
+        stop_id: Option<u64>,
+    },
 }
 
 
