@@ -2,7 +2,7 @@
 name = "bust"
 version = "0.1.0"
 edition = "2021"
-description = "Bus timetable and public transit data in your terminal, in rust."
+description = "Bus timetable and public transit data in your terminal, written in rust."
 author = "facklambda"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
