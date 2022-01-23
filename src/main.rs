@@ -1,39 +1,40 @@
-use clap::{Parser, Args, AppSettings, Subcommand, ArgEnum};
+use clap::{Parser};
+use dialoguer::{Confirm, FuzzySelect, Select};
+use tokio::select;
 
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 struct Cli {
-    #[clap(subcommand)]
-    command: Commands,
-}
 
-#[derive(Subcommand)]
-enum Commands {
-    #[clap(setting(AppSettings::ArgRequiredElseHelp))]
-    /// Provides info about a specified route.
-    Route {
-        /// Name or number of the route to query
-        route: Option<String>,
-    },
+    ///Stop ID
+    #[clap(short, long)]
+    stop: Option<u64>,
 
-    #[clap(setting(AppSettings::ArgRequiredElseHelp))]
-    /// Provides info about a specified stop
-    Stop {
-       /// 5 digit Stop ID to query
-       stop_id: Option<u64>,
-    },
+    /// Route name or number
+    #[clap(short, long)]
+    route: Option<String>,
 
-    #[clap(setting(AppSettings::ArgRequiredElseHelp))]
-    /// Provides info regarding your next specified trip
-    Next {
-        /// Name or number of the route to query
-        route: Option<String>,
-        /// Direction of route to query for
-        direction: Option<String>,
-        /// 5 digit Stop ID to query
-        stop_id: Option<u64>,
-    },
+    /// Direction of route
+    #[clap(short, long)]
+    direction: Option<String>,
+
+    /// Toggles pretty interface
+    #[clap(short, long)]
+    pretty: bool,
+
+    /// Toggles audible and visible alert
+    #[clap(short, long)]
+    alert: bool,
+    
+    /// Set output format
+    #[clap(short, long)]
+    output: Option<String>,
+
+    /// Limit output length
+    #[clap(short, long)]
+    limit: Option<u64>
+
 }
 
 
