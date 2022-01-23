@@ -1,27 +1,58 @@
-use clap::{Parser, Args, Subcommand, ArgEnum};
+use clap::{AppSettings, Parser};
+use tokio::select;
+use gtfs_structures::Gtfs;
 
-
-#[derive(Parser, Debug)]
+#[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
-struct Cli {
-    /// Name or number of the route to query
-    #[clap(short, long)]
-    route: Option<String>,
+#[clap(setting(AppSettings::ArgRequiredElseHelp))]
 
-    /// Stop ID to query
-    #[clap(short, long)]
+struct Cli {
+    ///stop id
+    #[clap(long)]
     stop_id: Option<u64>,
 
-    // One of either of the two directions that are valid for a given route. Either North/South or East/West. Used to filter output from other flags.
-    #[clap(short, long)]
-    direction: Option<String>,
-}
+    /// route name or number
+    #[clap(long)]
+    route: Option<String>,
 
+    /// direction of route
+    #[clap(long)]
+    direction: Option<String>,
+
+    /// toggle pretty interface
+    #[clap(long)]
+    pretty: bool,
+
+    /// toggle audible and visible alerts
+    #[clap(long)]
+    alert: bool,
+
+    /// toggle verbosity
+    #[clap(long)]
+    verbose: bool,
+
+    /// set output format
+    #[clap(short, long)]
+    output: Option<String>,
+
+    /// set output limit
+    #[clap(short, long)]
+    limit: Option<u64>,
+}
 
 //starting small, display bus info in terminal
 fn main() {
     let cli = Cli::parse();
+    let gtfs = gtfs_structures::Gtfs::new("https://svc.metrotransit.org/mtgtfs/gtfs.zip");
 
-    println!("eventually this will print useful data!")
+    if cli.verbose == true {
+        println!("verbosity is enabled, you will now see all println! debugging");
+        if cli.alert == true {
+            println!("Alerting is enabled, maybe a beep will happen or something");
+        } else {
+            println!("alerting is not enabled");
+        }
+    } else {
+        println!("eventually this will print useful data!")
+    }
 }
-
