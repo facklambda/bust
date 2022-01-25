@@ -1,73 +1,58 @@
-use std::io;
-use termion::raw::IntoRawMode;
-use tui::Terminal;
-use tui::backend::TermionBackend;
-use tui::widgets::{Widget, Block, Borders};
-use tui::layout::{Layout, Constraint, Direction};
+use clap::{AppSettings, Parser};
+use tokio::select;
+use gtfs_structures::Gtfs;
 
-const PROVIDERS_DB: &str = "./bust/providers.json"; //updates daily
-const ROUTES_DB: &str = "./bust/routes.json"; //updates daily
-const DIRECTIONS_DB: &str = "./bust/directions.json"; //updates daily
-const STOPS_DB: &str = "./bust/stops.json"; //updates daily lazily
-const DEPARTURES_DB: &str = "./bust/departures.json"; //updates every 30s while viewed
-const TIMEPOINT_DB: &str = "./bust/timepoint.json" //updates every 30s while viewed
-const LOCATIONS_DB: &str = "./bust/locations.json" //updates every 30s while viewed
+#[derive(Parser)]
+#[clap(author, version, about, long_about = None)]
+#[clap(setting(AppSettings::ArgRequiredElseHelp))]
 
-#[derive(Serialize, Deserialize, Clone)]
-struct Route {
-    description: String,
-    provider_id: String,
-    route: String,
+struct Cli {
+    ///stop id
+    #[clap(long)]
+    stop_id: Option<u64>,
+
+    /// route name or number
+    #[clap(long)]
+    route: Option<String>,
+
+    /// direction of route
+    #[clap(long)]
+    direction: Option<String>,
+
+    /// toggle pretty interface
+    #[clap(long)]
+    pretty: bool,
+
+    /// toggle audible and visible alerts
+    #[clap(long)]
+    alert: bool,
+
+    /// toggle verbosity
+    #[clap(long)]
+    verbose: bool,
+
+    /// set output format
+    #[clap(short, long)]
+    output: Option<String>,
+
+    /// set output limit
+    #[clap(short, long)]
+    limit: Option<u64>,
 }
 
-struct Departure {
-    actual: bool;
-    block_number: u64;
-    departure_text: String;
-    departure_time: String;
-    description: String;
-    gate: String;
-    route: String;
-    route_direction: String;
-    terminal: String;
-    vehicle_heading: u64;
-    vehicle_latitude: f64;
-    vehicle_longitude: f64;
+//starting small, display bus info in terminal
+fn main() {
+    let cli = Cli::parse();
+    let gtfs = gtfs_structures::Gtfs::new("https://svc.metrotransit.org/mtgtfs/gtfs.zip");
+
+    if cli.verbose == true {
+        println!("verbosity is enabled, you will now see all println! debugging");
+        if cli.alert == true {
+            println!("Alerting is enabled, maybe a beep will happen or something");
+        } else {
+            println!("alerting is not enabled");
+        }
+    } else {
+        println!("eventually this will print useful data!")
+    }
 }
-
-struct Pair {
-    text: String;
-    value: String;
-}
-
-struct Locations {
-    bearing: f64;
-	block_number: u64;
-	direction: u64;
-	location_time: String;
-	odometer: u64;
-	route: String;
-	speed: f64;
-	terminal:String;
-	vehicle_latitude: f64;
-	vehicle_longitude: f64;
-
-}
-
-
-struct Route
-fn main() -> Result<(), io::Error> {
-    let stdout = io::stdout().into_raw_mode()?;
-    let backend = TermionBackend::new(stdout);
-    let mut terminal = Terminal::new(backend)?;
-    terminal.draw(|f| {
-        let size = f.size();
-        let block = Block::default()
-            .title("Block")
-            .borders(Borders::ALL);
-        f.render_widget(block, size);
-    })?;
-    Ok(())
-}
-
-fn {}
