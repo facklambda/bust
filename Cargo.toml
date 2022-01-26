@@ -9,6 +9,6 @@ author = "facklambda"
 
 [dependencies]
 clap = { version = "3.0.10", features = ["derive"] }
-gtfs-structures = "0.30.0"
+gtfs-structures = { version = "0.30.0", features = ["read-url"] }
 reqwest = { version = "0.11", features = ["json"] }
 tokio = { version = "1", features = ["full"] }

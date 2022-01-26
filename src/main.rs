@@ -1,41 +1,43 @@
 use clap::{AppSettings, Parser};
+use gtfs_structures::StopTime;
 use tokio::select;
-use gtfs_structures::Gtfs;
+
+const GTFS_ZIP: &str = "./gtfs/"; //"https://svc.metrotransit.org/mtgtfs/gtfs.zip";
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 #[clap(setting(AppSettings::ArgRequiredElseHelp))]
 
 struct Cli {
-    ///stop id
+    ///Stop ID
     #[clap(long)]
-    stop_id: Option<u64>,
+    stop_id: Option<String>,
 
-    /// route name or number
+    /// Route name or number
     #[clap(long)]
-    route: Option<String>,
+    route_id: Option<String>,
 
-    /// direction of route
+    /// Direction of route
     #[clap(long)]
     direction: Option<String>,
 
-    /// toggle pretty interface
+    /// Toggle pretty interface
     #[clap(long)]
     pretty: bool,
 
-    /// toggle audible and visible alerts
+    /// Toggle audible and visible alerts
     #[clap(long)]
     alert: bool,
 
-    /// toggle verbosity
+    /// Toggle verbosity
     #[clap(long)]
     verbose: bool,
 
-    /// set output format
+    /// Set output format
     #[clap(short, long)]
     output: Option<String>,
 
-    /// set output limit
+    /// Set output limit
     #[clap(short, long)]
     limit: Option<u64>,
 }
@@ -43,16 +45,15 @@ struct Cli {
 //starting small, display bus info in terminal
 fn main() {
     let cli = Cli::parse();
-    let gtfs = gtfs_structures::Gtfs::new("https://svc.metrotransit.org/mtgtfs/gtfs.zip");
+    let gtfs = gtfs_structures::GtfsReader::default()
+        .read_stop_times(false)
+        .read(GTFS_ZIP)
+        .expect("impossible to read gtfs");
+    gtfs.print_stats();
 
-    if cli.verbose == true {
-        println!("verbosity is enabled, you will now see all println! debugging");
-        if cli.alert == true {
-            println!("Alerting is enabled, maybe a beep will happen or something");
-        } else {
-            println!("alerting is not enabled");
-        }
-    } else {
-        println!("eventually this will print useful data!")
+    if let Some(i) = cli.stop_id {
+        println!("stop id : {:?}", i.parse::<i64>().unwrap());
+        println!("stop data: {:?}", gtfs.get_stop(&i));
     }
+
 }
