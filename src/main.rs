@@ -9,51 +9,49 @@ const GTFS_ZIP: &str = "./gtfs/"; //"https://svc.metrotransit.org/mtgtfs/gtfs.zi
 #[clap(setting(AppSettings::ArgRequiredElseHelp))]
 
 struct Cli {
-    ///Stop ID
-    #[clap(long)]
-    stop_id: Option<String>,
+    /// Stop ID
+    stop_id: String,
 
     /// Route name or number
-    #[clap(long)]
+    #[clap(short, long)]
     route_id: Option<String>,
 
     /// Direction of route
+    #[clap(short, long, arg_enum)]
+    direction: Direction,
+
+    /// Force usage of Nextrip API instead of local GTFS archive
     #[clap(long)]
-    direction: Option<String>,
+    nextrip: bool,
 
-    /// Toggle pretty interface
+    #[clap(flatten)]
+    verbose: clap_verbosity_flag::Verbosity,
+
+    /// Format output to JSON
     #[clap(long)]
-    pretty: bool,
+    json: bool,
 
-    /// Toggle audible and visible alerts
-    #[clap(long)]
-    alert: bool,
+}
 
-    /// Toggle verbosity
-    #[clap(long)]
-    verbose: bool,
-
-    /// Set output format
-    #[clap(short, long)]
-    output: Option<String>,
-
-    /// Set output limit
-    #[clap(short, long)]
-    limit: Option<u64>,
+#[derive(clap::ArgEnum, Clone, Debug)]
+enum Direction {
+   north,
+   south,
+   east,
+   west,
 }
 
 //starting small, display bus info in terminal
 fn main() {
     let cli = Cli::parse();
-    let gtfs = gtfs_structures::GtfsReader::default()
-        .read_stop_times(false)
-        .read(GTFS_ZIP)
-        .expect("impossible to read gtfs");
-    gtfs.print_stats();
+    // let gtfs = gtfs_structures::GtfsReader::default()
+    //     .read_stop_times(false)
+    //     .read(GTFS_ZIP)
+    //     .expect("impossible to read gtfs");
+    // gtfs.print_stats();
 
-    if let Some(i) = cli.stop_id {
-        println!("stop id : {:?}", i.parse::<i64>().unwrap());
-        println!("stop data: {:?}", gtfs.get_stop(&i));
-    }
-
+    println!("Fetching timetable for the stop: {:?}", cli.stop_id);
+    println!("Fetching timetable for route: {:?}, serving stop: {:?}", cli.route_id, cli.stop_id);
+    println!("Fetching timetable for {:?}bound route: {:?}, serving stop: {:?}", cli.direction, cli.route_id, cli.stop_id);
+    println!("Fetching timetable for all {:?}bound routes serving stop: {:?}", cli.direction, cli.stop_id);
 }
