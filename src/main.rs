@@ -20,6 +20,10 @@ struct Cli {
     #[clap(long)]
     direction: Option<String>,
 
+    /// Force usage of Nextrip API instead of local GTFS archive
+    #[clap(long)]
+    nextrip: bool,
+
     #[clap(flatten)]
     verbose: clap_verbosity_flag::Verbosity,
 
