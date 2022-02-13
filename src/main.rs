@@ -9,9 +9,8 @@ const GTFS_ZIP: &str = "./gtfs/"; //"https://svc.metrotransit.org/mtgtfs/gtfs.zi
 #[clap(setting(AppSettings::ArgRequiredElseHelp))]
 
 struct Cli {
-    ///Stop ID
-    #[clap(long)]
-    stop_id: Option<String>,
+    /// Stop ID
+    stop_id: String,
 
     /// Route name or number
     #[clap(long)]
@@ -21,17 +20,8 @@ struct Cli {
     #[clap(long)]
     direction: Option<String>,
 
-    /// Toggle pretty interface
-    #[clap(long)]
-    pretty: bool,
-
-    /// Toggle audible and visible alerts
-    #[clap(long)]
-    alert: bool,
-
-    /// Toggle verbosity
-    #[clap(long)]
-    verbose: bool,
+    #[clap(flatten)]
+    verbose: clap_verbosity_flag::Verbosity,
 
     /// Set output format
     #[clap(short, long)]
@@ -45,15 +35,14 @@ struct Cli {
 //starting small, display bus info in terminal
 fn main() {
     let cli = Cli::parse();
-    let gtfs = gtfs_structures::GtfsReader::default()
-        .read_stop_times(false)
-        .read(GTFS_ZIP)
-        .expect("impossible to read gtfs");
-    gtfs.print_stats();
+    // let gtfs = gtfs_structures::GtfsReader::default()
+    //     .read_stop_times(false)
+    //     .read(GTFS_ZIP)
+    //     .expect("impossible to read gtfs");
+    // gtfs.print_stats();
 
-    if let Some(i) = cli.stop_id {
-        println!("stop id : {:?}", i.parse::<i64>().unwrap());
-        println!("stop data: {:?}", gtfs.get_stop(&i));
-    }
-
+    println!("Fetching timetable for the Stop ID: {:?}", cli.stop_id);
+    println!("Fetching timetable for Route: {:?}, serving Stop ID: {:?}", cli.route_id, cli.stop_id);
+    println!("Fetching timetable for {:?}bound Route: {:?}, serving Stop ID: {:?}", cli.direction, cli.route_id, cli.stop_id);
+    println!("Fetching timetable for all {:?}bound routes serving Stop ID: {:?}", cli.direction, cli.stop_id);
 }
