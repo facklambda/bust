@@ -13,12 +13,12 @@ struct Cli {
     stop_id: String,
 
     /// Route name or number
-    #[clap(long)]
+    #[clap(short, long)]
     route_id: Option<String>,
 
     /// Direction of route
-    #[clap(long)]
-    direction: Option<String>,
+    #[clap(short, long, arg_enum)]
+    direction: Direction,
 
     /// Force usage of Nextrip API instead of local GTFS archive
     #[clap(long)]
@@ -27,13 +27,18 @@ struct Cli {
     #[clap(flatten)]
     verbose: clap_verbosity_flag::Verbosity,
 
-    /// Set output format
-    #[clap(short, long)]
-    output: Option<String>,
+    /// Format output to JSON
+    #[clap(long)]
+    json: bool,
 
-    /// Set output limit
-    #[clap(short, long)]
-    limit: Option<u64>,
+}
+
+#[derive(clap::ArgEnum, Clone, Debug)]
+enum Direction {
+   north,
+   south,
+   east,
+   west,
 }
 
 //starting small, display bus info in terminal
@@ -45,8 +50,8 @@ fn main() {
     //     .expect("impossible to read gtfs");
     // gtfs.print_stats();
 
-    println!("Fetching timetable for the Stop ID: {:?}", cli.stop_id);
-    println!("Fetching timetable for Route: {:?}, serving Stop ID: {:?}", cli.route_id, cli.stop_id);
-    println!("Fetching timetable for {:?}bound Route: {:?}, serving Stop ID: {:?}", cli.direction, cli.route_id, cli.stop_id);
-    println!("Fetching timetable for all {:?}bound routes serving Stop ID: {:?}", cli.direction, cli.stop_id);
+    println!("Fetching timetable for the stop: {:?}", cli.stop_id);
+    println!("Fetching timetable for route: {:?}, serving stop: {:?}", cli.route_id, cli.stop_id);
+    println!("Fetching timetable for {:?}bound route: {:?}, serving stop: {:?}", cli.direction, cli.route_id, cli.stop_id);
+    println!("Fetching timetable for all {:?}bound routes serving stop: {:?}", cli.direction, cli.stop_id);
 }
