@@ -1,6 +1,8 @@
 # bust
 
-bust is a Work-In-Progress bus timetable and public transit data in your terminal, written in Rust.
+~~bust is a Work-In-Progress bus timetable and public transit data in your terminal, written in Rust.~~
+
+Bust is currently abandoned until I learn how to compute arrival times from gtfs info. I will be creating a different project to do a TUI specifically for my local transit provider.
 
 # Description
 
